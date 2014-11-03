@@ -54,7 +54,7 @@ $(document).ready(function() {
     var remaining = 8;
     var match = false;
 
-    $('#game-board img').click(function() {
+   /*$('#game-board img').click(function() {
         if (currentTile == null) {
             currentTile = $(this);
             console.log(currentTile);
@@ -86,6 +86,36 @@ $(document).ready(function() {
                 secondTile = null;
                 return;
             }
+        }
+    })*/
+
+    $('#game-board img').click(function() {
+        if (currentTile == null) {
+            currentTile = $(this);
+            if (currentTile.data('tile').flipped) {
+                return;
+            }
+            else {
+                flipTile(currentTile);
+            }
+        }
+        else {
+            var secondTile = $(this);
+            if (secondTile.data('tile').flipped) {
+                return;
+            }
+            else {
+                flipTile(secondTile);
+                match = compareTiles(currentTile.data('tile'), secondTile.data('tile'));
+                if (match) {
+                    ++matchCount;
+                    --remaining;
+                }
+                else {
+                    ++missedCount;
+                }
+            }
+            currentTile = null;
         }
     });
 
