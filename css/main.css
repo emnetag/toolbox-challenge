@@ -1,3 +1,22 @@
+@import url(http://fonts.googleapis.com/css?family=Raleway:400,300);
+@import url(http://fonts.googleapis.com/css?family=Lato:300,400);
+
+main {
+    text-align: center;
+    color: #00FEF4;
+}
+
+button {
+    margin: 15px;
+}
+
+body {
+    font-family: 'Lato', 'Helvetica-Neue', Helvetica, sans-serif;
+    font-size: 18px;
+    font-weight: 300;
+    background-image: url('../img/background_img.jpg');
+}
+
 #game-board img {
     width: 150px;
     height: 150px;
