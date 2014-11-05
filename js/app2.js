@@ -51,28 +51,20 @@ $(document).ready(function() {
     var match = false;
 
     $('#game-board img').click(function() {
-        if (currentTile == null) {
+        if ($(this).data('tile').flipped) {
+            return;
+        }
+        else if (currentTile == null) {
             currentTile = $(this);
             flipTile(currentTile);
         }
-        else if (currentTile != null) {
+        else {
             var secondTile = $(this);
             flipTile(secondTile);
 
             match = compareImages(currentTile.data('tile'), secondTile.data('tile'));
 
-            if (match) {
-                if (matchCount == 8) {
-                    window.alert('You won!!');
-                }
-                else {
-                    ++matchCount;
-                    --remaining;
-                    currentTile.data('tile').isMatched = true;
-                    secondTile.data('tile').isMatched = true;
-                }
-            }
-            else {
+            if (!match) {
                 ++missedCount;
                 window.setTimeout(function() {
                     flipTile(currentTile);
@@ -80,24 +72,36 @@ $(document).ready(function() {
                     currentTile = null;
                 }, 1000)
             }
+            else {
+                ++matchCount;
+                --remaining;
+                currentTile.data('tile').isMatched = true;
+                secondTile.data('tile').isMatched = true;
+                currentTile = null;
+            }
+            if (matchCount == 8) {
+                alert('You Won!!');
+            }
         }
     });
 
-    function flipTile(tile) {
-        var currentImg = tile.data('tile');
-        if (!currentImg.isMatched) {
-            tile.fadeOut(100, function() {
-                if (currentImg.flipped) {
-                    tile.attr('src', 'img/tile-back.png');
+    function flipTile(currentTile) {
+        var tile = currentTile.data('tile');
+        if (!tile.isMatched) {
+            currentTile.fadeOut(100, function () {
+                if (tile.flipped) {
+                    currentTile.attr('src', 'img/tile-back.png');
                 }
                 else {
-                    tile.attr('src', currentImg.src);
+                    currentTile.attr('src', tile.src);
                 }
-            }, 100);
+                tile.flipped = !tile.flipped;
+            });
+            currentTile.fadeIn(100);
         }
     }
 
     function compareImages(img1, img2) {
-        return img1.src == img2.src;
+        return img1.tileNum == img2.tileNum;
     }
 });
