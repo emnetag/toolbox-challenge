@@ -6,7 +6,7 @@
 
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
 
-        <link rel="stylesheet" href="css/main.css"/>
+        <link rel="stylesheet" href="css/main.css">
 
     </head>
 
@@ -15,26 +15,52 @@
             <header class="row">
                 <h1>Memory Game</h1>
 
-                <button type="button" class="btn btn-primary" id="startButton">Start Game</button>
+                <button type="button" class="btn btn-primary" id="startButton">Start New Game</button>
 
-                <button type="button" class="btn btn-info">Info</button>
+                <button type="button" class="btn btn-info" id="game-info-button">Info</button>
 
             </header>
 
-            <section class="row">
-                <p class="col-md-3" id="elapsed-seconds">Elapsed Time</p>
-                <p class="col-md-3" id="matches">Matches</p>
-                <p class="col-md-3" id="missed">Missed</p>
-                <p class="col-md-3" id="remaining matches">Remaining</p>
+            <section class="row" id="gameState">
+                <p class="col-md-3" id="elapsed-seconds">Elapsed Time: 0s</p>
+                <p class="col-md-3" id="matches">Matches: 0</p>
+                <p class="col-md-3" id="missed">Missed: 0</p>
+                <p class="col-md-3" id="remaining-matches">Remaining: 8</p>
             </section>
 
             <div id="game-board"></div>
         </main>
+
+        <div class="modal fade" id="game-info-modal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Rules of The Game</h4>
+                    </div>
+                    <div class="modal-body">
+                        <ul>
+                            <li>A turn consists of clicking two face down tiles.</li>
+                            <li>If the two images are the same, then they remain face up.</li>
+                            <li>You win the game when all of the tiles are matched.</li>
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" id="close-info-button">OK, I want to play!</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-won-message" id="gameWon">
+            <p>YOU WIN!!!</p>
+            <button type="button" class="btn btn-primary" id="close-message-button">OK, Awesome!</button>
+        </div>
+
+        <audio class="crowd-cheer" src="audio/crowd_cheer.mp3"></audio>
+
+        <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
+        <script src="js/app.js"></script>
     </body>
-
-    <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
-
-    <script src="js/app2.js"></script>
 </html>

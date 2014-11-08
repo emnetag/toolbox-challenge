@@ -3,55 +3,58 @@
 $(document).ready(function() {
     var tiles = [];
     var idx;
-    var timer;
-    var gameBoard = $('#game-board');
 
+    var currentImage = null;
+    var matchCount = 0;
+    var missedCount = 0;
+    var remaining = 8;
+    var match = false;
 
     for (idx = 1; idx <= 32; ++idx) {
         tiles.push({
-            tileNum: idx,
-            src: 'img/tile' + idx + '.jpg',
-            flipped: false,
-            isMatched: false
-        });
+             tileNum: idx,
+             src: 'img/tile' + idx + '.jpg',
+             flipped: false,
+             isMatched: false
+            }
+        );
     }
-    console.log(tiles);
+
+    var gameBoard = $('#game-board');
+    var timer;
+
 
     $('#startButton').click(function() {
-        newGame();
+
+        window.clearInterval(timer);
+        $('#matches').text('Matches: 0');
+        $('#missed').text('Missed: 0');
+        $('#remaining-matches').text('Remaining: 0');
+        newGame(tiles);
         startTimer();
     });
 
-    $('img').click(playTurn());
+    $('#game-info-button').click(function() {
+        $('#game-info-modal').modal();
+    });
 
-    function startTimer() {
-        var startTime = _.now();
-        timer = window.setInterval(function() {
-            var elapsedSeconds = Math.floor((_.now() - startTime) / 1000);
-            $('elapsed-seconds').text('Elapsed Time: ' + elapsedSeconds + 's');
-        }, 1000);
-    }
 
-    function newGame() {
+    function newGame(tiles) {
         gameBoard.empty();
         var shuffledTiles = _.shuffle(tiles);
         var selectedTiles = shuffledTiles.slice(0, 8);
-        console.log(selectedTiles);
 
         var tilePairs = [];
         _.forEach(selectedTiles, function(tile) {
             tilePairs.push(_.clone(tile));
             tilePairs.push(_.clone(tile));
         });
-
         tilePairs = _.shuffle(tilePairs);
-        console.log(tilePairs);
 
         var row = $(document.createElement('div'));
         var img;
 
         _.forEach(tilePairs, function(tile, elemIndex) {
-
             if (elemIndex > 0  && elemIndex % 4 == 0) {
                 gameBoard.append(row);
                 row = $(document.createElement('div'))
@@ -66,68 +69,90 @@ $(document).ready(function() {
             row.append(img);
         });
         gameBoard.append(row);
+
+        currentImage = null;
+        matchCount = 0;
+        remaining = 8;
+        match = false;
+        timer = null;
+
+        $('#game-board img').click(playTurn);
     }
 
-    var currentTile;
-    var matchCount = 0;
-    var missedCount = 0;
-    var remaining = 8;
-    var match = false;
-    function playTurn() {
-        if (currentTile == null) {
-            currentTile = $(this);
-            if (currentTile.data('tile').isMatched) {
-                currentTile = null;
-                return;
-            }
-            flipTile(currentTile);
-        }
-        else if (currentTile != null) {
-            var secondTile = $(this);
-            console.log(secondTile);
-            flipTile(secondTile);
-            match = compareTiles(currentTile.data('tile'), secondTile.data('tile'));
+    function startTimer() {
+        window.clearInterval(timer);
+        $('#elapsed-seconds').text('Elapsed Time: 0s');
+        var startTime = _.now();
+        timer = window.setInterval(function() {
+            var elapsedSeconds = Math.floor((_.now() - startTime) / 1000);
+            $('#elapsed-seconds').text('Elapsed Time: ' + elapsedSeconds + 's');
+        }, 1000);
+    }
 
-            if (match) {
-                if (matchCount == 8) {
-                    window.clearInterval(timer);
-                    window.alert('You won!!');
-                }
-                else {
-                    ++matchCount;
-                    --remaining;
-                    currentTile.data('tile').isMatched = true;
-                    secondTile.data('tile').isMatched = true;
-                }
+
+    function playTurn() {
+        if ($(this).data('tile').flipped) {
+            return;
+        }
+        else if (currentImage == null) {
+            currentImage = $(this);
+            flipTile(currentImage);
+        }
+        else {
+            var secondImage = $(this);
+            flipTile(secondImage);
+
+            match = compareImages(currentImage.data('tile'), secondImage.data('tile'));
+
+            if (!match) {
+                ++missedCount;
+                $("#missed").text("Missed: " + missedCount);
+                window.setTimeout(function() {
+                    flipTile(currentImage);
+                    flipTile(secondImage);
+                    currentImage = null;
+                }, 1000);
             }
             else {
-                ++missedCount;
-                window.setTimeout(function() {
-                    flipTile(currentTile);
-                    flipTile(secondTile);
-                    currentTile = null;
-                }, 1000)
+                ++matchCount;
+                --remaining;
+                $('#matches').text("Matches: " + matchCount);
+                $('#remaining-matches').text("Remaining: " + remaining);
+                currentImage = null;
+                if (matchCount == 8) {
+                    gameWon();
+                }
             }
         }
     }
 
-    function compareTiles(tile1, tile2) {
-        return tile1.src == tile2.src;
+    function gameWon() {
+        window.clearInterval(timer);
+        $('main').css('opacity', 0.4);
+        $('.game-won-message').hide().fadeIn(1000, function() {
+            $('.crowd-cheer').trigger('play');
+        });
+        $('#close-message-button').click(function() {
+            $('.game-won-message').hide();
+            $('main').css('opacity', 1);
+        });
     }
 
-    function flipTile(currentTile) {
-        var tile = currentTile.data('tile');
-        if (!tile.isMatched) {
-            currentTile.fadeOut(100, function() {
-                if (tile.flipped) {
-                    currentTile.attr('src', 'img/tile-back.png');
-                }
-                else {
-                    currentTile.attr('src', tile.src);
-                }
-                tile.flipped = !tile.flipped;
-                currentTile.fadeIn(100);
-            });
-        }
+    function flipTile(currentImage) {
+        var tile = currentImage.data('tile');
+        currentImage.fadeOut(100, function() {
+            if (tile.flipped) {
+                currentImage.attr('src', 'img/tile-back.png');
+            }
+            else {
+                currentImage.attr('src', tile.src);
+            }
+            tile.flipped = !tile.flipped;
+            currentImage.fadeIn(100);
+        });
+    }
+
+    function compareImages(img1, img2) {
+        return img1.tileNum == img2.tileNum;
     }
 });

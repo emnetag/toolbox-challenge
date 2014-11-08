@@ -3,7 +3,7 @@
 
 main {
     text-align: center;
-    color: #00FEF4;
+    color: #FFFFFF;
 }
 
 button {
@@ -17,13 +17,32 @@ body {
     background-image: url('../img/background_img.jpg');
 }
 
+#gameState {
+    padding: 1em;
+}
+
 #game-board img {
     width: 150px;
     height: 150px;
     margin-right: 5px;
+    cursor: pointer;
 }
 
 #game-board div {
     margin-top: 5px;
     margin-bottom: 5px;
+}
+
+.modal-backdrop.in {
+    opacity: 0;
+}
+
+.game-won-message {
+    display: none;
+    padding: 1em;
+    position: relative;
+    bottom: 50%;
+    color: #FFFFFF;
+    text-align: center;
+    font-size: 25px;
 }
