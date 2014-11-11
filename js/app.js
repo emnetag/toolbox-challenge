@@ -10,6 +10,9 @@ $(document).ready(function() {
     var remaining = 8;
     var match = false;
 
+    var gameBoard = $('#game-board');
+    var timer;
+
     for (idx = 1; idx <= 32; ++idx) {
         tiles.push({
              tileNum: idx,
@@ -20,25 +23,23 @@ $(document).ready(function() {
         );
     }
 
-    var gameBoard = $('#game-board');
-    var timer;
-
-
+    //click-event handler for start new game button
     $('#startButton').click(function() {
-
         window.clearInterval(timer);
         $('#matches').text('Matches: 0');
         $('#missed').text('Missed: 0');
-        $('#remaining-matches').text('Remaining: 0');
+        $('#remaining-matches').text('Remaining: 8');
         newGame(tiles);
         startTimer();
     });
 
+    //click-event handler for the game information button
     $('#game-info-button').click(function() {
         $('#game-info-modal').modal();
     });
 
-
+    //creates a new game board to to play the memory game and
+    //resets all statistics for the game
     function newGame(tiles) {
         gameBoard.empty();
         var shuffledTiles = _.shuffle(tiles);
@@ -79,6 +80,7 @@ $(document).ready(function() {
         $('#game-board img').click(playTurn);
     }
 
+    //starts a running timer and displays it to the user
     function startTimer() {
         window.clearInterval(timer);
         $('#elapsed-seconds').text('Elapsed Time: 0s');
@@ -89,7 +91,9 @@ $(document).ready(function() {
         }, 1000);
     }
 
-
+    //plays a single turn of the memory game which consists of clicking two separate
+    //tiles that are not flipped. Once two images are clicked, the game state information
+    //is updated for the user to see
     function playTurn() {
         if ($(this).data('tile').flipped) {
             return;
@@ -126,6 +130,8 @@ $(document).ready(function() {
         }
     }
 
+    //stops the timer and displays a message to the user that they won the
+    //game and plays a cheering sound
     function gameWon() {
         window.clearInterval(timer);
         $('main').css('opacity', 0.4);
@@ -138,6 +144,8 @@ $(document).ready(function() {
         });
     }
 
+    //accepts an image element as a parameter and shows a blank tile if it
+    //was already flipped or shows the actual image if it was blank before
     function flipTile(currentImage) {
         var tile = currentImage.data('tile');
         currentImage.fadeOut(100, function() {
@@ -152,6 +160,7 @@ $(document).ready(function() {
         });
     }
 
+    //compares the data associated with two images and returns whether or not they match
     function compareImages(img1, img2) {
         return img1.tileNum == img2.tileNum;
     }
